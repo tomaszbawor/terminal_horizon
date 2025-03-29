@@ -44,7 +44,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
 
             // Determine tile symbol and style
             let symbol = if x == player.x && y == player.y {
-                "@"
+                "󰋦"
             } else {
                 map.get_tile_symbol(x, y)
             };
