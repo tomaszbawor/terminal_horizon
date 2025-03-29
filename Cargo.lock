@@ -503,7 +503,7 @@ dependencies = [
 
 [[package]]
 name = "terminal_horizon"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "crossterm",
  "rand",

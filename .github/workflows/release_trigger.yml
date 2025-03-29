@@ -60,26 +60,3 @@ jobs:
     with:
       version: ${{ github.event.inputs.version }}
       is-tag-release: false
-
-  create-tag:
-    name: Create Tag
-    needs: build-and-release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: master # Get the latest changes including the version bump
-
-      - name: Configure Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      - name: Create and push tag
-        run: |
-          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
-          git push origin "v${{ github.event.inputs.version }}"
