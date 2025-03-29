@@ -1,4 +1,4 @@
-use crossterm::event::{self, Event};
+use crossterm::event::{self};
 use std::{
     io,
     time::{Duration, Instant},

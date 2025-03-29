@@ -1,10 +1,10 @@
 use super::map;
 use super::sidebar;
 use crate::app::App;
-use ratatui::{prelude::*, widgets::*};
+use ratatui::prelude::*;
 
 pub fn render(f: &mut Frame, app: &App) {
-    let size = f.size();
+    let size = f.area();
 
     // Split screen into sidebar and map areas
     let chunks = Layout::default()

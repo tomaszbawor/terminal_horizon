@@ -4,7 +4,7 @@ pub mod map;
 pub mod sidebar;
 
 use crate::app::{App, AppScreen};
-use ratatui::{prelude::*, widgets::*};
+use ratatui::prelude::*;
 
 pub fn ui(f: &mut Frame, app: &App) {
     match app.screen {

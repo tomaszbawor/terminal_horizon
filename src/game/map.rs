@@ -1,4 +1,4 @@
-use rand::{Rng, thread_rng};
+use rand::{Rng, rng};
 
 #[derive(Clone)]
 pub enum Tile {
@@ -16,15 +16,15 @@ pub struct GameMap {
 
 impl GameMap {
     pub fn new(width: usize, height: usize) -> Self {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let mut tiles = vec![vec![Tile::Floor; width]; height];
 
         // Add some random walls
-        for y in 0..height {
-            for x in 0..width {
-                if rng.gen_ratio(1, 10) && !(x == 10 && y == 10) {
-                    // Don't place a wall at player's starting position
-                    tiles[y][x] = Tile::Wall;
+
+        for tile_row in tiles.iter_mut() {
+            for tile in tile_row.iter_mut() {
+                if rng.random_ratio(1, 10) {
+                    *tile = Tile::Wall;
                 }
             }
         }
@@ -34,9 +34,9 @@ impl GameMap {
             tiles[height - 1][x] = Tile::Wall;
         }
 
-        for y in 0..height {
-            tiles[y][0] = Tile::Wall;
-            tiles[y][width - 1] = Tile::Wall;
+        for item in tiles.iter_mut().take(height) {
+            item[0] = Tile::Wall;
+            item[width - 1] = Tile::Wall;
         }
 
         Self {
