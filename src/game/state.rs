@@ -1,6 +1,5 @@
-
-use super::player::Player;
 use super::map::GameMap;
+use super::player::Player;
 
 pub struct GameState {
     pub player: Player,

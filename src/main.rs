@@ -7,10 +7,10 @@ use app::App;
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use input::events::EventHandler;
-use ratatui::{prelude::*, Terminal};
+use ratatui::{Terminal, prelude::*};
 use std::{error::Error, io};
 use ui::ui;
 

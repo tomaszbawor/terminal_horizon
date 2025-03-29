@@ -1,6 +1,6 @@
-use crate::game::state::GameState;
-use crate::game::player::Player;
 use crate::game::map::GameMap;
+use crate::game::player::Player;
+use crate::game::state::GameState;
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use std::io;
 
@@ -24,10 +24,10 @@ impl App {
             should_quit: false,
             menu_index: 0,
             menu_items: vec![
-                "New Game".to_string(), 
-                "Continue".to_string(), 
-                "Options".to_string(), 
-                "Quit".to_string()
+                "New Game".to_string(),
+                "Continue".to_string(),
+                "Options".to_string(),
+                "Quit".to_string(),
             ],
             game_state: GameState {
                 player: Player::new("Hero", 100, 10, 5),
@@ -63,8 +63,8 @@ impl App {
                 match self.menu_index {
                     0 => self.screen = AppScreen::Game, // New Game
                     1 => self.screen = AppScreen::Game, // Continue
-                    2 => {}, // Options (not implemented yet)
-                    3 => self.should_quit = true, // Quit
+                    2 => {}                             // Options (not implemented yet)
+                    3 => self.should_quit = true,       // Quit
                     _ => {}
                 }
             }

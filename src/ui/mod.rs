@@ -1,7 +1,7 @@
-pub mod main_menu;
 pub mod game_ui;
-pub mod sidebar;
+pub mod main_menu;
 pub mod map;
+pub mod sidebar;
 
 use crate::app::{App, AppScreen};
 use ratatui::{prelude::*, widgets::*};
