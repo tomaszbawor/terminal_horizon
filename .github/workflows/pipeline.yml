@@ -51,16 +51,16 @@ jobs:
         include:
           - os: ubuntu-latest
             name: linux
-            artifact: rust_rpg
-            asset_name: rust_rpg-linux-x86_64.tar.gz
+            artifact: terminal_horizon
+            asset_name: terminal_horizon-linux-x86_64.tar.gz
           - os: macos-latest
             name: macos
-            artifact: rust_rpg
-            asset_name: rust_rpg-macos-x86_64.tar.gz
+            artifact: terminal_horizon
+            asset_name: terminal_horizon-macos-x86_64.tar.gz
           - os: windows-latest
             name: windows
-            artifact: rust_rpg.exe
-            asset_name: rust_rpg-windows-x86_64.zip
+            artifact:   terminal_horizon.exe
+            asset_name: terminal_horizon-windows-x86_64.zip
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -141,8 +141,8 @@ jobs:
           name: Release v${{ steps.get_version.outputs.VERSION }}
           body_path: RELEASE_NOTES.md
           files: |
-            rust_rpg-linux-x86_64.tar.gz
-            rust_rpg-macos-x86_64.tar.gz
-            rust_rpg-windows-x86_64.zip
+            terminal_horizon-linux-x86_64.tar.gz
+            terminal_horizon-macos-x86_64.tar.gz
+            terminal_horizon-windows-x86_64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,5 @@
 [package]
-name = "tui_rpg"
+name = "terminal_horizon"
 version = "0.0.2"
 edition = "2024"
 
