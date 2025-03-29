@@ -51,7 +51,7 @@ pub fn render(f: &mut Frame, app: &App) {
     f.render_widget(menu, menu_area);
 
     // Add some game title and footer
-    let title = Paragraph::new("RUST TERMINAL RPG")
+    let title = Paragraph::new("Terminal Horizon")
         .style(
             Style::default()
                 .fg(Color::Green)
