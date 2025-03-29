@@ -63,7 +63,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
             let cell = Cell::from(symbol).style(style);
             f.buffer_mut()
                 .get_mut(screen_x, screen_y)
-                .set_symbol(symbol.clone())
+                .set_symbol(symbol)
                 .set_style(style);
         }
     }
