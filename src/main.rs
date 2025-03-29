@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 mod app;
+mod errors;
 mod game;
 mod input;
 mod ui;
@@ -11,6 +12,7 @@ use crossterm::{
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
+use errors::AppError;
 use input::events::EventHandler;
 use ratatui::{Terminal, prelude::*};
 use std::{error::Error, io};
@@ -52,21 +54,26 @@ fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     app: &mut App,
     mut event_handler: EventHandler,
-) -> io::Result<()> {
+) -> Result<(), AppError> {
     loop {
         // Draw UI
         terminal.draw(|f| ui(f, app))?;
 
-        // Handle events
-        if event_handler.next()? {
+        if event_handler
+            .next()
+            .map_err(|e| AppError::EventError(e.to_string()))?
+        {
             match app.handle_events() {
+                // handle_events now returns Result<(), AppError>
                 Ok(should_quit) => {
                     if should_quit {
                         return Ok(());
                     }
                 }
                 Err(err) => {
-                    return Err(io::Error::new(io::ErrorKind::Other, format!("{:?}", err)));
+                    // Log error maybe, then return it
+                    eprintln!("Error during event handling: {}", err);
+                    return Err(err); // Propagate the specific error
                 }
             }
         }
