@@ -2,7 +2,7 @@ use crate::app::App;
 use ratatui::{prelude::*, widgets::*};
 
 pub fn render(f: &mut Frame, app: &App) {
-    let size = f.size();
+    let size = f.area();
 
     // Create a centered block for the menu
     let block = Block::default()

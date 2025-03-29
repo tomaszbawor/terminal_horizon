@@ -60,11 +60,9 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
             };
 
             // Render the tile at the calculated position
-            let cell = Cell::from(symbol).style(style);
-            f.buffer_mut()
-                .get_mut(screen_x, screen_y)
-                .set_symbol(symbol)
-                .set_style(style);
+            if let Some(cell) = f.buffer_mut().cell_mut(Position::new(screen_x, screen_x)) {
+                cell.set_symbol(symbol).set_style(style);
+            }
         }
     }
 }
