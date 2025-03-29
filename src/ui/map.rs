@@ -59,7 +59,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
             
             // Render the tile at the calculated position
             let cell = Cell::from(symbol).style(style);
-            //f.get_mut(screen_x, screen_y).set_symbol(symbol.clone()).set_style(cell);
+            f.buffer_mut().get_mut(screen_x, screen_y).set_symbol(symbol.clone()).set_style(style);
         }
     }
 }

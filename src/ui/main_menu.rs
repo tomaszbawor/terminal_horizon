@@ -44,7 +44,7 @@ pub fn render(f: &mut Frame, app: &App) {
         .block(Block::default().borders(Borders::NONE))
         .highlight_style(Style::default().add_modifier(Modifier::BOLD))
         .highlight_symbol("> ");
-
+        //.alignment(Alignment::Center);
     
     f.render_widget(menu, menu_area);
     
@@ -77,3 +77,4 @@ pub fn render(f: &mut Frame, app: &App) {
     
     f.render_widget(footer, footer_area);
 }
+
