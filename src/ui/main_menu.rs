@@ -6,7 +6,7 @@ pub fn render(f: &mut Frame, app: &App) {
 
     // Create a centered block for the menu
     let block = Block::default()
-        .title("RUST RPG")
+        .title("Terminal Horizon")
         .title_alignment(Alignment::Center)
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
@@ -37,16 +37,16 @@ pub fn render(f: &mut Frame, app: &App) {
                 Style::default().fg(Color::White)
             };
 
-            ListItem::new(item.clone()).style(style)
+            let text = Text::raw(item).style(style).alignment(Alignment::Center);
+
+            ListItem::new(text)
         })
         .collect();
 
     // Create and render the menu list
     let menu = List::new(menu_items)
         .block(Block::default().borders(Borders::NONE))
-        .highlight_style(Style::default().add_modifier(Modifier::BOLD))
-        .highlight_symbol("> ");
-    //.alignment(Alignment::Center);
+        .highlight_style(Style::default().add_modifier(Modifier::BOLD));
 
     f.render_widget(menu, menu_area);
 
