@@ -1,5 +1,5 @@
-use super::sidebar;
 use super::game_area;
+use super::sidebar;
 use crate::app::App;
 use ratatui::prelude::*;
 
