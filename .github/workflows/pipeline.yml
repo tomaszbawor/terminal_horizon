@@ -101,7 +101,7 @@ jobs:
           7z a ../${{ matrix.asset_name }} *
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}-build
           path: ${{ matrix.asset_name }}
@@ -121,7 +121,7 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Prepare release assets
         run: |
