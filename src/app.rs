@@ -1,11 +1,13 @@
-use crate::game::map::GameMap;
+use crate::game::action_log::ActionType;
 use crate::game::player::Player;
 use crate::game::state::GameState;
+use crate::game::{action_log::ActionLog, map::GameMap};
 use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use std::io;
 
 pub enum AppScreen {
     MainMenu,
+    Options,
     Game,
 }
 
@@ -32,6 +34,7 @@ impl App {
             game_state: GameState {
                 player: Player::new("Hero", 100, 10, 5),
                 map: GameMap::new(50, 30),
+                journal: Vec::new(),
                 turn: 0,
             },
         }
@@ -42,6 +45,7 @@ impl App {
             match self.screen {
                 AppScreen::MainMenu => self.handle_menu_input(key),
                 AppScreen::Game => self.handle_game_input(key),
+                AppScreen::Options => todo!(),
             }
         }
         Ok(self.should_quit)
@@ -101,5 +105,13 @@ impl App {
             }
             _ => {}
         }
+
+        self.game_state.journal.push(ActionLog::new(
+            self.game_state.turn,
+            ActionType::Movement {
+                x: self.game_state.player.x,
+                y: self.game_state.player.y,
+            },
+        ));
     }
 }
