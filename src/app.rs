@@ -33,7 +33,7 @@ impl App {
             ],
             game_state: GameState {
                 player: Player::new("Hero", 100, 10, 5),
-                map: GameMap::new(50, 30),
+                map: GameMap::new(150, 130),
                 journal: Vec::new(),
                 turn: 0,
             },

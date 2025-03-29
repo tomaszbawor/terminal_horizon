@@ -11,6 +11,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
             Constraint::Length(9), // Player info
             Constraint::Length(7), // Stats
             Constraint::Min(3),    // Controls
+            Constraint::Length(3), // Turn Number
         ])
         .split(area);
 
@@ -108,15 +109,5 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
     ])])
     .block(turn_block);
 
-    // Get area below the controls
-    let turn_area = Rect {
-        x: chunks[2].x,
-        y: chunks[2].y + chunks[2].height,
-        width: chunks[2].width,
-        height: 3,
-    };
-
-    if turn_area.y + turn_area.height <= area.height {
-        f.render_widget(turn_info, turn_area);
-    }
+    f.render_widget(turn_info, chunks[3]);
 }
