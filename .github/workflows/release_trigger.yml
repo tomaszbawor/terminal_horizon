@@ -12,14 +12,13 @@ permissions:
   contents: write
 
 jobs:
-  create-tag:
+  create-tag-and-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -40,3 +39,11 @@ jobs:
         run: |
           git push origin HEAD:master
           git push origin "v${{ github.event.inputs.version }}"
+
+      - name: Wait for pipeline to start
+        run: |
+          echo "Tag v${{ github.event.inputs.version }} has been pushed."
+          echo "The main pipeline will now build and create a release automatically."
+          echo "You can monitor the progress in the Actions tab."
+          echo "Waiting 10 seconds to allow the pipeline to start..."
+          sleep 10
