@@ -1,5 +1,5 @@
-use super::map;
 use super::sidebar;
+use super::game_area;
 use crate::app::App;
 use ratatui::prelude::*;
 
@@ -19,5 +19,5 @@ pub fn render(f: &mut Frame, app: &App) {
     sidebar::render(f, app, chunks[0]);
 
     // Render map
-    map::render(f, app, chunks[1]);
+    game_area::render(f, app, chunks[1]);
 }

@@ -1,3 +1,5 @@
+pub mod app_log;
+pub mod game_area;
 pub mod game_ui;
 pub mod main_menu;
 pub mod map;
