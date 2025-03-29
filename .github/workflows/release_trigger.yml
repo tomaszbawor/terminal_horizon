@@ -38,5 +38,5 @@ jobs:
 
       - name: Push changes
         run: |
-          git push origin HEAD:main
+          git push origin HEAD:master
           git push origin "v${{ github.event.inputs.version }}"
