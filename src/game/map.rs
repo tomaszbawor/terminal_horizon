@@ -20,7 +20,6 @@ impl GameMap {
         let mut tiles = vec![vec![Tile::Floor; width]; height];
 
         // Add some random walls
-
         for tile_row in tiles.iter_mut() {
             for tile in tile_row.iter_mut() {
                 if rng.random_ratio(1, 10) {
