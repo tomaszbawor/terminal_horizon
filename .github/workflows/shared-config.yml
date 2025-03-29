@@ -1,0 +1,146 @@
+name: Reusable Build and Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version to release (without v prefix)'
+        type: string
+        required: false
+      is-tag-release:
+        description: 'Whether this is triggered by a tag'
+        type: boolean
+        default: false
+        required: false
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+            artifact: terminal_horizon
+            asset_name: terminal_horizon-linux-x86_64.tar.gz
+          - os: macos-latest
+            name: macos
+            artifact: terminal_horizon
+            asset_name: terminal_horizon-macos-x86_64.tar.gz
+          - os: windows-latest
+            name: windows
+            artifact: terminal_horizon.exe
+            asset_name: terminal_horizon-windows-x86_64.zip
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libncurses-dev
+
+      - name: Build release
+        run: cargo build --release
+
+      - name: Create archive (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p dist
+          cp target/release/${{ matrix.artifact }} dist/
+          cp README.md dist/ || touch dist/README.md
+          cd dist
+          tar czf ../${{ matrix.asset_name }} *
+
+      - name: Create archive (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir -p dist
+          cp target/release/${{ matrix.artifact }} dist/
+          cp README.md dist/ || echo. > dist/README.md
+          cd dist
+          7z a ../${{ matrix.asset_name }} *
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.name }}-build
+          path: ${{ matrix.asset_name }}
+          retention-days: 7
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: inputs.is-tag-release || inputs.version != ''
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: get_version
+        if: inputs.is-tag-release
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Set version from input
+        id: set_version
+        if: inputs.version != ''
+        run: echo "VERSION=${{ inputs.version }}" >> $GITHUB_OUTPUT
+
+      - name: Determine final version
+        id: final_version
+        run: |
+          if [[ "${{ inputs.is-tag-release }}" == "true" ]]; then
+            echo "VERSION=${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${{ steps.set_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Debug directory structure
+        run: |
+          echo "Current directory structure:"
+          find . -type f | sort
+          echo "---"
+
+      - name: Prepare release assets
+        run: |
+          # Move all archives to the current directory
+          find . -name "*.zip" -o -name "*.tar.gz" -exec mv {} . \;
+          echo "Files available for release:"
+          ls -la *.zip *.tar.gz || echo "No matching files found"
+
+      - name: Generate release notes
+        run: |
+          echo "# Terminal Horizon v${{ steps.final_version.outputs.VERSION }}" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Changes in this release:" >> RELEASE_NOTES.md
+          git log $(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD --pretty=format:"- %s" >> RELEASE_NOTES.md || echo "- Initial release" >> RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ steps.final_version.outputs.VERSION }}"
+          name: "Release v${{ steps.final_version.outputs.VERSION }}"
+          body_path: RELEASE_NOTES.md
+          files: |
+            terminal_horizon-linux-x86_64.tar.gz
+            terminal_horizon-macos-x86_64.tar.gz
+            terminal_horizon-windows-x86_64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

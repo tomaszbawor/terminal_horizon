@@ -12,7 +12,8 @@ permissions:
   contents: write
 
 jobs:
-  create-tag-and-build:
+  prepare-release:
+    name: Prepare Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,20 +31,53 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"${{ github.event.inputs.version }}\"/" Cargo.toml
           git add Cargo.toml
 
-      - name: Commit and tag
+      - name: Commit and push changes
         run: |
           git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
-          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
-
-      - name: Push changes
-        run: |
           git push origin HEAD:master
-          git push origin "v${{ github.event.inputs.version }}"
 
-      - name: Wait for pipeline to start
+      - name: Run tests
         run: |
-          echo "Tag v${{ github.event.inputs.version }} has been pushed."
-          echo "The main pipeline will now build and create a release automatically."
-          echo "You can monitor the progress in the Actions tab."
-          echo "Waiting 10 seconds to allow the pipeline to start..."
-          sleep 10
+          # Install Rust
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source "$HOME/.cargo/env"
+          
+          # Install dependencies
+          sudo apt-get update
+          sudo apt-get install -y libncurses-dev
+          
+          # Run tests
+          cargo fmt --all -- --check
+          cargo clippy -- -D warnings
+          cargo test
+
+  build-and-release:
+    name: Build and Release
+    needs: prepare-release
+    uses: ./.github/workflows/shared-config.yml
+    with:
+      version: ${{ github.event.inputs.version }}
+      is-tag-release: false
+
+  create-tag:
+    name: Create Tag
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master # Get the latest changes including the version bump
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Create and push tag
+        run: |
+          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
+#          git push origin "v${{ github.event.inputs.version }}"
