@@ -54,6 +54,8 @@ jobs:
   build-and-release:
     name: Build and Release
     needs: prepare-release
+    permissions:
+      contents: write
     uses: ./.github/workflows/shared-config.yml
     with:
       version: ${{ github.event.inputs.version }}
@@ -80,4 +82,4 @@ jobs:
       - name: Create and push tag
         run: |
           git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
-#          git push origin "v${{ github.event.inputs.version }}"
+          git push origin "v${{ github.event.inputs.version }}"
