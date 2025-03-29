@@ -5,6 +5,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
     // Create a block for the map
     let map_block = Block::default()
         .title("World Map")
+        .title_alignment(Alignment::Center)
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
 

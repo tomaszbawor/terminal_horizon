@@ -6,6 +6,7 @@ use std::io;
 
 pub enum AppScreen {
     MainMenu,
+    Options,
     Game,
 }
 
@@ -42,6 +43,7 @@ impl App {
             match self.screen {
                 AppScreen::MainMenu => self.handle_menu_input(key),
                 AppScreen::Game => self.handle_game_input(key),
+                AppScreen::Options => todo!(),
             }
         }
         Ok(self.should_quit)

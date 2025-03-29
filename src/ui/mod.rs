@@ -12,5 +12,6 @@ pub fn ui(f: &mut Frame, app: &App) {
     match app.screen {
         AppScreen::MainMenu => main_menu::render(f, app),
         AppScreen::Game => game_ui::render(f, app),
+        AppScreen::Options => todo!(),
     }
 }
