@@ -1,5 +1,7 @@
-use bevy_ecs::world::World;
+use bevy_ecs::{query::With, world::World};
 use ratatui::{prelude::*, widgets::*};
+
+use crate::game::{components::Player, components::Position, state::GameTurn};
 
 pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
     // Create blocks for different sections
@@ -53,6 +55,9 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
 
+    let mut ddf = world.query_filtered::<&Position, With<Player>>();
+    let ppos = ddf.single(world);
+
     let stats_info = Paragraph::new(vec![
         Line::from(vec![
             Span::styled("Attack: ", Style::default().fg(Color::Gray)),
@@ -73,8 +78,7 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         Line::from(vec![
             Span::styled("Position: ", Style::default().fg(Color::Gray)),
             Span::styled(
-                // format!("({}, {})", player.position.x, player.position.y),
-                "POS",
+                format!("({}, {})", ppos.x, ppos.y),
                 Style::default().fg(Color::White),
             ),
         ]),
@@ -104,13 +108,12 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
 
+    let turn = world.resource::<GameTurn>();
+    let turn_nikm = turn.0;
+
     let turn_info = Paragraph::new(vec![Line::from(vec![
         Span::styled("Turn: ", Style::default().fg(Color::Gray)),
-        Span::styled(
-            // world.game_state.turn.to_string(),
-            "12",
-            Style::default().fg(Color::White),
-        ),
+        Span::styled(turn_nikm.to_string(), Style::default().fg(Color::White)),
     ])])
     .block(turn_block);
 

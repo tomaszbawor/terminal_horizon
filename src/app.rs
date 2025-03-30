@@ -1,4 +1,3 @@
-
 use crate::errors::AppError;
 use crate::game::components::{
     AiState, BasicAi, BlocksTile, Enemy, Health, Name, Player, Position, Renderable, Stats,
@@ -7,8 +6,9 @@ use crate::game::map::GameMap;
 use crate::game::state::{ActionJournal, GameTurn};
 use crate::game::systems;
 use crate::input::handlers::GameAction;
-use bevy_ecs::component::Component;
+use bevy_ecs::change_detection::DetectChangesMut;
 use bevy_ecs::schedule::{IntoSystemConfigs, Schedule, SystemSet, apply_deferred};
+use bevy_ecs::system::Resource;
 use bevy_ecs::world::World;
 use crossterm::event::{self, Event};
 use rand::{Rng, rng};
@@ -20,14 +20,15 @@ pub enum AppScreen {
     Game,
 }
 
-#[derive(Component)]
+#[derive(Resource, PartialEq)]
+pub struct GameInputAction(pub Option<GameAction>);
+
 pub struct App {
     pub screen: AppScreen,
     pub should_quit: bool,
     pub menu_index: usize,
     pub world: World,
     pub schedule: Schedule,
-    pub game_input_action: Option<GameAction>,
 }
 
 const ENEMIES_COUNT: usize = 10;
@@ -44,12 +45,13 @@ impl App {
         world.insert_resource(map.clone()); // Clone since we need map to spawn enemies on start
         world.insert_resource(ActionJournal::default());
         world.insert_resource(GameTurn::default());
+        world.insert_resource(GameInputAction(None));
 
         // Spawn entities
         world.spawn((
             Player,
             Name("Hero".to_string()),
-            Position { x: 10, y: 10 },
+            Position { x: 2, y: 2 },
             Renderable {
                 symbol: 'u'.to_string(),
                 fg: Color::Yellow,
@@ -119,11 +121,12 @@ impl App {
             menu_index: 0,
             schedule,
             world,
-            game_input_action: None,
         }
     }
 
     pub fn handle_events(&mut self) -> Result<bool, AppError> {
+        let mut gia = self.world.resource_mut::<GameInputAction>();
+
         // Using hypothetical AppError
         if let Event::Key(key) = event::read().map_err(AppError::Io)? {
             match self.screen {
@@ -133,13 +136,15 @@ impl App {
                     }
                 }
                 AppScreen::Game => {
-                    self.game_input_action = crate::input::handlers::handle_game_input(key);
-                    if matches!(self.game_input_action, Some(GameAction::OpenMenu)) {
+                    gia.set_if_neq(GameInputAction(crate::input::handlers::handle_game_input(
+                        key,
+                    )));
+                    if matches!(gia.0, Some(GameAction::OpenMenu)) {
                         self.screen = AppScreen::MainMenu;
-                        self.game_input_action = None; // Consume action
-                    } else if matches!(self.game_input_action, Some(GameAction::Quit)) {
+                        gia.set_if_neq(GameInputAction(None)); // Consume Acton
+                    } else if matches!(gia.0, Some(GameAction::Quit)) {
                         self.should_quit = true;
-                        self.game_input_action = None; // Consume action
+                        gia.set_if_neq(GameInputAction(None)); // Consume Acton
                     }
                     // Player input action now handled by the system
                 }
@@ -151,12 +156,13 @@ impl App {
 
     // Run schedules only when player did action
     pub fn run_schedule(&mut self) {
+        let mut gia = self.world.resource_mut::<GameInputAction>();
         // Only run the schedule if there was a player action waiting
         // or potentially on a timer later for real-time elements.
-        if self.game_input_action.is_some() {
+        if gia.0.is_some() {
+            gia.set_if_neq(GameInputAction(None)); // Consume Acton
             self.schedule.run(&mut self.world);
             // Clear the action after the schedule runs
-            self.game_input_action = None;
         }
     }
 

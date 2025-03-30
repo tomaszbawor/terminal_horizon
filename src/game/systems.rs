@@ -1,4 +1,4 @@
-use crate::app::App; // Need App temporarily for input action
+use crate::app::GameInputAction; // Need App temporarily for input action
 use crate::game::components::*;
 use crate::game::map::GameMap;
 use crate::input::handlers::{Direction, GameAction};
@@ -9,13 +9,13 @@ use super::state::GameTurn;
 // System to process player input and add intent components
 pub fn player_input_system(
     mut commands: Commands, // Use Commands to add/remove components/entities
-    mut app_query: Query<&mut App>, // Querying App is generally discouraged, better ways exist
-    player_query: Query<Entity, With<Player>>, // Find the player entity
+    game_input_action: ResMut<GameInputAction>, // Querying App is generally discouraged, better ways exist
+    player_query: Query<Entity, With<Player>>,  // Find the player entity
 ) {
-    let mut app = app_query.single_mut(); // Assumes only one App entity (or manage state differently)
+    let app = game_input_action; // Assumes only one App entity (or manage state differently)
     let player_entity = player_query.get_single();
 
-    if let (Ok(player_ent), Some(action)) = (player_entity, app.game_input_action.take()) {
+    if let (Ok(player_ent), Some(action)) = (player_entity, app.0.clone()) {
         match action {
             GameAction::MovePlayer(direction) => {
                 // Add a "WantsToMove" component to the player entity
@@ -35,8 +35,8 @@ pub fn player_input_system(
 pub fn movement_system(
     mut commands: Commands,
     mut movers: Query<(Entity, &mut Position, &WantsToMove)>,
-    blockers: Query<&Position, With<BlocksTile>>, // Query for positions of blocking entities
-    map: Res<GameMap>,                            // Access the map resource
+    //blockers: Query<&Position, With<BlocksTile>>, // Query for positions of blocking entities
+    map: Res<GameMap>, // Access the map resource
 ) {
     for (entity, mut pos, intent) in movers.iter_mut() {
         let current_x = pos.x;
@@ -52,9 +52,10 @@ pub fn movement_system(
         // Check map bounds and walls
         if next_x < map.width && next_y < map.height && !map.is_wall(next_x, next_y) {
             // Check collision with blocking entities
-            let collision = blockers
-                .iter()
-                .any(|blocker_pos| blocker_pos.x == next_x && blocker_pos.y == next_y);
+            // let collision = blockers
+            //     .iter()
+            //     .any(|blocker_pos| blocker_pos.x == next_x && blocker_pos.y == next_y);
+            let collision = false;
 
             if !collision {
                 pos.x = next_x;

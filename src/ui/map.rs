@@ -60,19 +60,22 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
     let mut enemies_query = world.query::<(&Position, &Renderable)>();
 
     // Render map tiles
-    //
     for (pos, renderable) in enemies_query.iter(world) {
         let symbol = renderable.symbol.clone();
-        let x = pos.x;
-        let y = pos.y;
 
-        if let Some(cell) = f
-            .buffer_mut()
-            .cell_mut(ratatui::prelude::Position::new(x as u16, y as u16))
-        {
-            cell.set_symbol(symbol.as_str());
-            cell.set_style(Style::default().fg(renderable.fg).bg(renderable.bg));
-        };
+        // If entity in viewport
+        if pos.x >= start_x && pos.x < end_x && pos.y >= start_y && pos.y < end_y {
+            let screen_x = inner_area.x + (pos.x - start_x) as u16;
+            let screen_y = inner_area.y + (pos.y - start_y) as u16;
+
+            if let Some(cell) = f
+                .buffer_mut()
+                .cell_mut(ratatui::prelude::Position::new(screen_x, screen_y))
+            {
+                cell.set_symbol(symbol.as_str());
+                cell.set_style(Style::default().fg(renderable.fg).bg(renderable.bg));
+            };
+        }
     }
 
     // Override if player
