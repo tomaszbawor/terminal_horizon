@@ -42,10 +42,10 @@ impl Clone for Enemy {
             position: self.position.clone(),
             symbol: self.symbol.clone(),
             name: self.name.clone(),
-            hp: self.hp.clone(),
-            max_hp: self.max_hp.clone(),
-            attack: self.attack.clone(),
-            defense: self.defense.clone(),
+            hp: self.hp,
+            max_hp: self.max_hp,
+            attack: self.attack,
+            defense: self.defense,
             ai_behavior: self.ai_behavior.clone_box(),
         }
     }

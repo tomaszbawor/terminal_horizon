@@ -74,12 +74,10 @@ impl BasicMonsterAI {
             } else if dx < 0 {
                 next_x = next_x.saturating_sub(1);
             }
-        } else {
-            if dy > 0 {
-                next_y += 1;
-            } else if dy < 0 {
-                next_y = next_y.saturating_sub(1);
-            }
+        } else if dy > 0 {
+            next_y += 1;
+        } else if dy < 0 {
+            next_y = next_y.saturating_sub(1);
         }
         EntityPosition::new(next_x, next_y)
     }

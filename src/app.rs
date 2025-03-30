@@ -117,7 +117,7 @@ impl App {
         let mut moved = false; // Track if player moved to update turn/log
         let mut player_took_action = false; // turn may be passed not only by moving
 
-        let mut new_pos = (
+        let new_pos = (
             self.game_state.player.position.x,
             self.game_state.player.position.y,
         );
