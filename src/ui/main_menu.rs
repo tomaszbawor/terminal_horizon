@@ -1,7 +1,7 @@
-use crate::app::App;
+use bevy_ecs::world::World;
 use ratatui::{prelude::*, widgets::*};
 
-pub fn render(f: &mut Frame, app: &App) {
+pub fn render(f: &mut Frame, app: &World) {
     let size = f.area();
 
     // Create a centered block for the menu
@@ -18,7 +18,7 @@ pub fn render(f: &mut Frame, app: &App) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Percentage(30),
-            Constraint::Length(app.menu_items.len() as u16 * 3),
+            Constraint::Length(5 * 3), // Menu Items times 3
             Constraint::Percentage(30),
         ])
         .split(size)[1];

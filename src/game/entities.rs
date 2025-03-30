@@ -25,7 +25,7 @@ pub enum AiState {
 }
 
 #[derive(Debug)]
-pub struct Enemy {
+struct Enemy {
     pub position: EntityPosition,
     pub symbol: String,
     pub name: String,

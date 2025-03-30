@@ -1,7 +1,16 @@
-use crate::app::App;
+use std::cell;
+
+use crate::{
+    app::App,
+    game::{
+        components::{Player, Position, Renderable},
+        map::GameMap,
+    },
+};
+use bevy_ecs::{query::With, world::World};
 use ratatui::{prelude::*, widgets::*};
 
-pub fn render(f: &mut Frame, app: &App, area: Rect) {
+pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
     // Create a block for the map
     let map_block = Block::default()
         .title("World Map")
@@ -15,17 +24,18 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
     let inner_area = map_block.inner(area);
 
     // Get the map and player
-    let map = &app.game_state.map;
-    let player = &app.game_state.player;
-    let enemies = &app.game_state.enemies;
+    let map = World::resource::<GameMap>(world);
+    let query_filtered = World::query_filtered::<&Position, With<Player>>(world);
+    let mut player_position_query = query_filtered;
+    let mut enemies_query = world.query::<(&Position, &Renderable)>();
 
-    // Calculate viewport - center on player
+    let player_position = player_position_query.single(world);
+
+    // Viewport Calculation
     let viewport_width = inner_area.width as usize;
     let viewport_height = inner_area.height as usize;
-
-    let start_x = player.position.x.saturating_sub(viewport_width / 2);
-    let start_y = player.position.y.saturating_sub(viewport_height / 2);
-
+    let start_x = player_position.x.saturating_sub(viewport_width / 2);
+    let start_y = player_position.y.saturating_sub(viewport_height / 2);
     let end_x = std::cmp::min(start_x + viewport_width, map.width);
     let end_y = std::cmp::min(start_y + viewport_height, map.height);
 
@@ -37,40 +47,45 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
             let screen_y = inner_area.y + (y - start_y) as u16;
 
             // Skip if outside screen bounds
-            if screen_x >= inner_area.x + inner_area.width
-                || screen_y >= inner_area.y + inner_area.height
-            {
+            if screen_x >= inner_area.right() || screen_y >= inner_area.bottom() {
                 continue;
             }
 
             // Default with map tiles
-            let mut symbol = map.get_tile_symbol(x, y);
-            let mut style: Style = match map.tiles[y][x] {
-                crate::game::map::Tile::Floor => Style::default().fg(Color::DarkGray),
-                crate::game::map::Tile::Wall => Style::default().fg(Color::White),
-                crate::game::map::Tile::Door => Style::default().fg(Color::LightYellow),
-                crate::game::map::Tile::Water => Style::default().fg(Color::Blue),
+            let symbol = map.get_tile_symbol(x, y);
+            let style = map.get_tile_style(x, y);
+
+            if let Some(cell) = f
+                .buffer_mut()
+                .cell_mut(ratatui::prelude::Position::new(screen_x, screen_y))
+            {
+                cell.set_symbol(symbol);
+                cell.set_style(style);
             };
 
+            // Render Entities on Map
+            //
+            for (pos, renderable) in enemies_query.iter(world) {}
+
             // Override if player
-            if x == player.position.x && y == player.position.y {
-                symbol = "󰋦";
-                style = Style::default().fg(Color::Yellow)
-            }
-
-            // Override if enemy
-            if let Some(enemy) = enemies
-                .iter()
-                .find(|&e| e.position.x == x && e.position.y == y)
-            {
-                symbol = &enemy.symbol;
-                style = Style::default().fg(Color::LightRed); // enemy color
-            }
-
-            // Render the tile at the calculated position
-            if let Some(cell) = f.buffer_mut().cell_mut(Position::new(screen_x, screen_y)) {
-                cell.set_style(style).set_symbol(symbol);
-            }
+            // if x == player_position.x && y == player_position.y {
+            //     symbol = "󰋦";
+            //     style = Style::default().fg(Color::Yellow)
+            // }
+            //
+            // // Override if enemy
+            // if let Some(enemy) = enemies
+            //     .iter()
+            //     .find(|&e| e.position.x == x && e.position.y == y)
+            // {
+            //     symbol = &enemy.symbol;
+            //     style = Style::default().fg(Color::LightRed); // enemy color
+            // }
+            //
+            // // Render the tile at the calculated position
+            // if let Some(cell) = f.buffer_mut().cell_mut(Position::new(screen_x, screen_y)) {
+            //     cell.set_style(style).set_symbol(symbol);
+            // }
         }
     }
 }

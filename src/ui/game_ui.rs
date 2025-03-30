@@ -1,9 +1,9 @@
 use super::game_area;
 use super::sidebar;
-use crate::app::App;
+use bevy_ecs::world::World;
 use ratatui::prelude::*;
 
-pub fn render(f: &mut Frame, app: &App) {
+pub fn render(f: &mut Frame, world: &World) {
     let size = f.area();
 
     // Split screen into sidebar and map areas
@@ -16,8 +16,8 @@ pub fn render(f: &mut Frame, app: &App) {
         .split(size);
 
     // Render sidebar with player stats
-    sidebar::render(f, app, chunks[0]);
+    sidebar::render(f, world, chunks[0]);
 
     // Render map
-    game_area::render(f, app, chunks[1]);
+    game_area::render(f, world, chunks[1]);
 }

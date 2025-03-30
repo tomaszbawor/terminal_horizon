@@ -1,4 +1,6 @@
+use bevy_ecs::system::Resource;
 use rand::{Rng, rng};
+use ratatui::style::{Color, Style};
 
 #[derive(Clone)]
 pub enum Tile {
@@ -8,7 +10,7 @@ pub enum Tile {
     Water,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Resource)]
 pub struct GameMap {
     pub width: usize,
     pub height: usize,
@@ -59,6 +61,15 @@ impl GameMap {
             Tile::Wall => "#",
             Tile::Door => "+",
             Tile::Water => "~",
+        }
+    }
+
+    pub fn get_tile_style(&self, x: usize, y: usize) -> Style {
+        match self.tiles[y][x] {
+            crate::game::map::Tile::Floor => Style::default().fg(Color::DarkGray),
+            crate::game::map::Tile::Wall => Style::default().fg(Color::White),
+            crate::game::map::Tile::Door => Style::default().fg(Color::LightYellow),
+            crate::game::map::Tile::Water => Style::default().fg(Color::Blue),
         }
     }
 }

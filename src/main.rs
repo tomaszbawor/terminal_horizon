@@ -6,7 +6,7 @@ mod game;
 mod input;
 mod ui;
 
-use app::App;
+use app::{App, AppScreen};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -76,6 +76,10 @@ fn run_app<B: Backend>(
                     return Err(err); // Propagate the specific error
                 }
             }
+        }
+
+        if matches!(app.screen, AppScreen::Game) {
+            app.run_schedule();
         }
     }
 }

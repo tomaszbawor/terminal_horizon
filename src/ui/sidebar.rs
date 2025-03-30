@@ -1,9 +1,7 @@
-use crate::app::App;
+use bevy_ecs::world::World;
 use ratatui::{prelude::*, widgets::*};
 
-pub fn render(f: &mut Frame, app: &App, area: Rect) {
-    let player = &app.game_state.player;
-
+pub fn render(f: &mut Frame, world: &World, area: Rect) {
     // Create blocks for different sections
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -103,7 +101,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
     let turn_info = Paragraph::new(vec![Line::from(vec![
         Span::styled("Turn: ", Style::default().fg(Color::Gray)),
         Span::styled(
-            app.game_state.turn.to_string(),
+            world.game_state.turn.to_string(),
             Style::default().fg(Color::White),
         ),
     ])])

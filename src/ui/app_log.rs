@@ -1,14 +1,16 @@
-use crate::app::App;
 use crate::game::action_log::ActionLog;
 use crate::game::entities::EntityPosition;
+use crate::game::state::ActionJournal;
+use bevy_ecs::world::World;
 use ratatui::Frame;
 use ratatui::layout::{Alignment, Rect};
 use ratatui::widgets::{Block, BorderType, Borders, List, ListItem};
 
-pub fn render(f: &mut Frame, app: &App, area: Rect) {
-    let journal_lines: Vec<String> = app
-        .game_state
-        .journal
+pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
+    let journal = world.resource::<ActionJournal>();
+
+    let journal_lines: Vec<String> = journal
+        .entries
         .iter()
         .rev()
         .take(5)

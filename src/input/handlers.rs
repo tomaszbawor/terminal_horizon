@@ -11,6 +11,7 @@ pub enum MenuAction {
 // Represents actions possible in the game
 pub enum GameAction {
     MovePlayer(Direction), // Define Direction enum (Up, Down, Left, Right)
+    OpenInventory,
     OpenMenu,
     Quit,
 }

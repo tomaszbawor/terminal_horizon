@@ -1,3 +1,5 @@
+use bevy_ecs::system::Resource;
+
 use super::ActionLog;
 use super::entities::Enemy;
 use super::map::GameMap;
@@ -11,3 +13,11 @@ pub struct GameState {
     pub journal: Vec<ActionLog>,
     pub turn: u32,
 }
+
+#[derive(Resource, Default)]
+pub struct ActionJournal {
+    pub entries: Vec<ActionLog>,
+}
+
+#[derive(Resource, Default)]
+pub struct GameTurn(pub u32);
