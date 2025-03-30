@@ -1,5 +1,6 @@
 use crate::errors::AppError;
 use crate::game::action_log::ActionType;
+use crate::game::ai::AiAction;
 use crate::game::entities::{Enemy, EntityPosition};
 use crate::game::player::Player;
 use crate::game::state::GameState;
@@ -114,6 +115,8 @@ impl App {
     fn apply_game_action(&mut self, action: crate::input::handlers::GameAction) {
         use crate::input::handlers::{Direction, GameAction};
         let mut moved = false; // Track if player moved to update turn/log
+        let mut player_took_action = false; // turn may be passed not only by moving
+
         let mut new_pos = (
             self.game_state.player.position.x,
             self.game_state.player.position.y,
@@ -136,24 +139,88 @@ impl App {
                     }
                 }
                 if moved {
-                    new_pos = (
-                        self.game_state.player.position.x,
-                        self.game_state.player.position.y,
-                    );
-                    //TODO: Move Enemy AI
+                    moved = true;
+                    player_took_action = true;
+                    self.game_state.journal.push(ActionLog::new(
+                        self.game_state.turn,
+                        ActionType::Movement {
+                            x: new_pos.0,
+                            y: new_pos.1,
+                        },
+                    ));
                 }
             }
         }
 
-        if moved {
-            self.game_state.turn += 1;
-            self.game_state.journal.push(ActionLog::new(
-                self.game_state.turn,
-                ActionType::Movement {
-                    x: new_pos.0,
-                    y: new_pos.1,
-                },
-            ));
+        if player_took_action {
+            self.game_state.turn += 1; // Increment turn only once after all actions resolve
+            //
+            // Store intended actions: (enemy_index, decided_action)
+            let mut enemy_actions: Vec<(usize, AiAction)> =
+                Vec::with_capacity(self.game_state.enemies.len());
+
+            // Decide Actions
+            for i in 0..self.game_state.enemies.len() {
+                let enemy_pos = self.game_state.enemies[i].position.clone(); // Clone position for decision
+                //
+                let gs = self.game_state.clone();
+
+                let ai_decision = self.game_state.enemies[i]
+                    .ai_behavior
+                    .decide_next_action(&enemy_pos, &gs); // Pass immutable game_state
+
+                enemy_actions.push((i, ai_decision)); // Store decision
+            }
+
+            // Execute Actions
+            for (enemy_index, action) in enemy_actions {
+                match action {
+                    AiAction::Wait => {
+                        // Log enemy waiting (optional)
+                    }
+                    AiAction::MoveTo(next_pos) => {
+                        // Check bounds and walls BEFORE updating position
+                        if next_pos.x < self.game_state.map.width
+                            && next_pos.y < self.game_state.map.height
+                            && !self.game_state.map.is_wall(next_pos.x, next_pos.y)
+                        {
+                            // Check for collision with player (basic)
+                            if next_pos != self.game_state.player.position {
+                                // Check for collision with other enemies (basic)
+                                let collision = self.game_state.enemies.iter().enumerate().any(
+                                    |(idx, other)| idx != enemy_index && other.position == next_pos,
+                                );
+
+                                if !collision {
+                                    self.game_state.enemies[enemy_index].position = next_pos;
+                                    // Log enemy movement (optional)
+                                }
+                            } else {
+                                // Enemy bumps into player - attack instead? Or just block.
+                                // For now, block. Combat system needed.
+                            }
+                        }
+                    }
+                    AiAction::Attack(target_id) => {
+                        // Implement combat logic here
+                        // For now, just log (placeholder)
+                        println!(
+                            "Enemy {} attacks target {}!",
+                            self.game_state.enemies[enemy_index].name, target_id
+                        );
+                        self.game_state.journal.push(ActionLog::new(
+                            self.game_state.turn,
+                            ActionType::MonsterAttack {
+                                // You'll need to define this variant
+                                attacker_name: self.game_state.enemies[enemy_index].name.clone(), // Immutable borrow needed here
+                                target_name: self.game_state.player.name.clone(), // Immutable borrow needed here
+                                damage: 0, // Placeholder damage
+                            },
+                        ));
+                        // TODO: Apply damage to the player (would need mutable player borrow)
+                    }
+                }
+            }
         }
     }
 }

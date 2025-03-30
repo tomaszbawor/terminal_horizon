@@ -1,3 +1,5 @@
+use super::ai::{AiBehavior, BasicMonsterAI};
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct EntityPosition {
     pub x: usize,
@@ -19,9 +21,10 @@ pub struct Entity {
 pub enum AiState {
     Idle,
     Chasing,
+    Attacking,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Enemy {
     pub position: EntityPosition,
     pub symbol: String,
@@ -30,8 +33,22 @@ pub struct Enemy {
     pub max_hp: i32,
     pub attack: i32,
     pub defense: i32,
-    pub ai_state: AiState,
-    pub fov_radius: i32,
+    pub ai_behavior: Box<dyn AiBehavior>,
+}
+
+impl Clone for Enemy {
+    fn clone(&self) -> Self {
+        Self {
+            position: self.position.clone(),
+            symbol: self.symbol.clone(),
+            name: self.name.clone(),
+            hp: self.hp.clone(),
+            max_hp: self.max_hp.clone(),
+            attack: self.attack.clone(),
+            defense: self.defense.clone(),
+            ai_behavior: self.ai_behavior.clone_box(),
+        }
+    }
 }
 
 // Basic movement logic for Enemy - can be expanded in ai.rs later
@@ -54,16 +71,15 @@ impl Enemy {
             max_hp: hp,
             attack,
             defense,
-            ai_state: AiState::Idle,
-            fov_radius,
+            ai_behavior: Box::new(BasicMonsterAI::new(fov_radius)),
         }
     }
 
     // Simple check for now, replace with proper FOV later
-    pub fn is_player_in_fov(&self, player_x: usize, player_y: usize) -> bool {
-        let dx = (self.position.x as i32 - player_x as i32).abs();
-        let dy = (self.position.y as i32 - player_y as i32).abs();
-        // Simple distance check for now
-        dx <= self.fov_radius && dy <= self.fov_radius
-    }
+    // pub fn is_player_in_fov(&self, player_x: usize, player_y: usize) -> bool {
+    //     let dx = (self.position.x as i32 - player_x as i32).abs();
+    //     let dy = (self.position.y as i32 - player_y as i32).abs();
+    //     // Simple distance check for now
+    //     dx <= self.fov_radius && dy <= self.fov_radius
+    // }
 }

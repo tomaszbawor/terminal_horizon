@@ -8,6 +8,7 @@ pub enum Tile {
     Water,
 }
 
+#[derive(Clone)]
 pub struct GameMap {
     pub width: usize,
     pub height: usize,

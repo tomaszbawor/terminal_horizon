@@ -6,7 +6,15 @@ pub struct ActionLog {
 
 #[derive(Debug, Clone)]
 pub enum ActionType {
-    Movement { x: usize, y: usize },
+    Movement {
+        x: usize,
+        y: usize,
+    },
+    MonsterAttack {
+        attacker_name: String,
+        target_name: String,
+        damage: usize,
+    },
 }
 
 impl ActionLog {

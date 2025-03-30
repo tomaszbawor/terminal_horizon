@@ -1,5 +1,6 @@
 use super::{entities::EntityPosition, map::GameMap};
 
+#[derive(Debug, Clone)]
 pub struct Player {
     pub name: String,
     pub position: EntityPosition,
