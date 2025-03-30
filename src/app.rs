@@ -1,9 +1,13 @@
+use std::ops::Range;
+
 use crate::errors::AppError;
 use crate::game::action_log::ActionType;
+use crate::game::entities::Enemy;
 use crate::game::player::Player;
 use crate::game::state::GameState;
 use crate::game::{action_log::ActionLog, map::GameMap};
 use crossterm::event::{self, Event};
+use rand::{Rng, random_range, rng};
 
 pub enum AppScreen {
     MainMenu,
@@ -21,6 +25,17 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
+        let map = GameMap::new(150, 130);
+        let enemies = vec![Enemy::new(20, 20, "Goblin", "g", 20, 5, 2, 8)];
+
+        //let rand = rng();
+
+        //while enemies.len() < 4 {
+        // generate random cooridinates for enemies
+        //enemies.push(Enemy::new(20, 20, "Goblin", "g", 20, 5, 2, 8));
+        //   break;
+        //}
+
         Self {
             screen: AppScreen::MainMenu,
             should_quit: false,
@@ -33,7 +48,8 @@ impl App {
             ],
             game_state: GameState {
                 player: Player::new("Hero", 100, 10, 5),
-                map: GameMap::new(150, 130),
+                map,
+                enemies,
                 journal: Vec::new(),
                 turn: 0,
             },
@@ -105,6 +121,7 @@ impl App {
                 }
                 if moved {
                     new_pos = (self.game_state.player.x, self.game_state.player.y);
+                    //TODO: Move Enemy AI
                 }
             }
         }
