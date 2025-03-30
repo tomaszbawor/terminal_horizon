@@ -139,7 +139,6 @@ impl App {
                     }
                 }
                 if moved {
-                    moved = true;
                     player_took_action = true;
                     self.game_state.journal.push(ActionLog::new(
                         self.game_state.turn,
@@ -152,7 +151,7 @@ impl App {
             }
         }
 
-        if player_took_action {
+        if player_took_action || moved {
             self.game_state.turn += 1; // Increment turn only once after all actions resolve
             //
             // Store intended actions: (enemy_index, decided_action)

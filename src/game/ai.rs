@@ -69,10 +69,10 @@ impl BasicMonsterAI {
 
         // Move horizontally or vertically towards the target
         if dx.abs() > dy.abs() {
-            if dx > 0 {
-                next_x += 1;
-            } else if dx < 0 {
-                next_x = next_x.saturating_sub(1);
+            match dx.cmp(&0) {
+                std::cmp::Ordering::Less => next_x = next_x.saturating_sub(1),
+                std::cmp::Ordering::Greater => next_x += 1,
+                _ => {}
             }
         } else if dy > 0 {
             next_y += 1;
