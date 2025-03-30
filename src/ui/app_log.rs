@@ -30,10 +30,18 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
 }
 
 fn create_log_entry(action_log: &ActionLog) -> String {
-    let log_message = match action_log.action_type {
+    let log_message = match &action_log.action_type {
         crate::game::action_log::ActionType::Movement { x, y } => {
             format!("Player moved into: ({}, {})", x, y)
         }
+        crate::game::action_log::ActionType::MonsterAttack {
+            attacker_name,
+            target_name,
+            damage,
+        } => format!(
+            "{} attacked {} for {} damage.",
+            attacker_name, target_name, damage
+        ),
     };
 
     format!("[Turn: {}]: {}", action_log.turn, log_message)
