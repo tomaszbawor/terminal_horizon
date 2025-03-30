@@ -17,6 +17,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
     // Get the map and player
     let map = &app.game_state.map;
     let player = &app.game_state.player;
+    let enemies = &app.game_state.enemies;
 
     // Calculate viewport - center on player
     let viewport_width = inner_area.width as usize;
@@ -42,23 +43,26 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
                 continue;
             }
 
-            // Determine tile symbol and style
-            let symbol = if x == player.x && y == player.y {
-                "󰋦"
-            } else {
-                map.get_tile_symbol(x, y)
+            // Default with map tiles
+            let mut symbol = map.get_tile_symbol(x, y);
+            let mut style: Style = match map.tiles[y][x] {
+                crate::game::map::Tile::Floor => Style::default().fg(Color::DarkGray),
+                crate::game::map::Tile::Wall => Style::default().fg(Color::White),
+                crate::game::map::Tile::Door => Style::default().fg(Color::LightYellow),
+                crate::game::map::Tile::Water => Style::default().fg(Color::Blue),
             };
 
-            let style = if x == player.x && y == player.y {
-                Style::default().fg(Color::Yellow)
-            } else {
-                match map.tiles[y][x] {
-                    crate::game::map::Tile::Floor => Style::default().fg(Color::DarkGray),
-                    crate::game::map::Tile::Wall => Style::default().fg(Color::White),
-                    crate::game::map::Tile::Door => Style::default().fg(Color::LightYellow),
-                    crate::game::map::Tile::Water => Style::default().fg(Color::Blue),
-                }
-            };
+            // Override if player
+            if x == player.x && y == player.y {
+                symbol = "󰋦";
+                style = Style::default().fg(Color::Yellow)
+            }
+
+            // Override if enemy
+            if let Some(enemy) = enemies.iter().find(|&e| e.x == x && e.y == y) {
+                symbol = &enemy.symbol;
+                style = Style::default().fg(Color::LightRed); // enemy color
+            }
 
             // Render the tile at the calculated position
             if let Some(cell) = f.buffer_mut().cell_mut(Position::new(screen_x, screen_y)) {
