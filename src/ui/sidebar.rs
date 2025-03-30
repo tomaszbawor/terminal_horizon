@@ -70,7 +70,7 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
         Line::from(vec![
             Span::styled("Position: ", Style::default().fg(Color::Gray)),
             Span::styled(
-                format!("({}, {})", player.x, player.y),
+                format!("({}, {})", player.position.x, player.position.y),
                 Style::default().fg(Color::White),
             ),
         ]),

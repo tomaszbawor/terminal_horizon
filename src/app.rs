@@ -1,6 +1,6 @@
 use crate::errors::AppError;
 use crate::game::action_log::ActionType;
-use crate::game::entities::Enemy;
+use crate::game::entities::{Enemy, EntityPosition};
 use crate::game::player::Player;
 use crate::game::state::GameState;
 use crate::game::{action_log::ActionLog, map::GameMap};
@@ -23,7 +23,15 @@ pub struct App {
 impl App {
     pub fn new() -> Self {
         let map = GameMap::new(150, 130);
-        let enemies = vec![Enemy::new(20, 20, "Goblin", "g", 20, 5, 2, 8)];
+        let enemies = vec![Enemy::new(
+            EntityPosition::new(20, 20),
+            "Goblin",
+            "g",
+            20,
+            5,
+            2,
+            8,
+        )];
 
         //let rand = rng();
 
@@ -98,7 +106,10 @@ impl App {
     fn apply_game_action(&mut self, action: crate::input::handlers::GameAction) {
         use crate::input::handlers::{Direction, GameAction};
         let mut moved = false; // Track if player moved to update turn/log
-        let mut new_pos = (self.game_state.player.x, self.game_state.player.y);
+        let mut new_pos = (
+            self.game_state.player.position.x,
+            self.game_state.player.position.y,
+        );
 
         match action {
             GameAction::OpenMenu => self.screen = AppScreen::MainMenu,
@@ -117,7 +128,10 @@ impl App {
                     }
                 }
                 if moved {
-                    new_pos = (self.game_state.player.x, self.game_state.player.y);
+                    new_pos = (
+                        self.game_state.player.position.x,
+                        self.game_state.player.position.y,
+                    );
                     //TODO: Move Enemy AI
                 }
             }

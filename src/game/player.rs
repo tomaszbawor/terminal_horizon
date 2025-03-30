@@ -1,9 +1,8 @@
-use super::map::GameMap;
+use super::{entities::EntityPosition, map::GameMap};
 
 pub struct Player {
     pub name: String,
-    pub x: usize,
-    pub y: usize,
+    pub position: EntityPosition,
     pub hp: u32,
     pub max_hp: u32,
     pub attack: u32,
@@ -16,8 +15,7 @@ impl Player {
     pub fn new(name: &str, hp: u32, attack: u32, defense: u32) -> Self {
         Self {
             name: name.to_string(),
-            x: 10,
-            y: 10,
+            position: EntityPosition::new(10, 10),
             hp,
             max_hp: hp,
             attack,
@@ -28,8 +26,8 @@ impl Player {
     }
 
     pub fn move_up(&mut self, map: &GameMap) -> bool {
-        if self.y > 0 && !map.is_wall(self.x, self.y - 1) {
-            self.y -= 1;
+        if self.position.y > 0 && !map.is_wall(self.position.x, self.position.y - 1) {
+            self.position.y -= 1;
             true
         } else {
             false
@@ -37,8 +35,8 @@ impl Player {
     }
 
     pub fn move_down(&mut self, map: &GameMap) -> bool {
-        if self.y < map.height - 1 && !map.is_wall(self.x, self.y + 1) {
-            self.y += 1;
+        if self.position.y < map.height - 1 && !map.is_wall(self.position.x, self.position.y + 1) {
+            self.position.y += 1;
             true
         } else {
             false
@@ -46,8 +44,8 @@ impl Player {
     }
 
     pub fn move_left(&mut self, map: &GameMap) -> bool {
-        if self.x > 0 && !map.is_wall(self.x - 1, self.y) {
-            self.x -= 1;
+        if self.position.x > 0 && !map.is_wall(self.position.x - 1, self.position.y) {
+            self.position.x -= 1;
             true
         } else {
             false
@@ -55,8 +53,8 @@ impl Player {
     }
 
     pub fn move_right(&mut self, map: &GameMap) -> bool {
-        if self.x < map.width - 1 && !map.is_wall(self.x + 1, self.y) {
-            self.x += 1;
+        if self.position.x < map.width - 1 && !map.is_wall(self.position.x + 1, self.position.y) {
+            self.position.x += 1;
             true
         } else {
             false
