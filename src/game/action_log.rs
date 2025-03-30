@@ -1,4 +1,4 @@
-use super::entities::EntityPosition;
+use super::components::Position;
 
 #[derive(Debug, Clone)]
 pub struct ActionLog {
@@ -9,7 +9,7 @@ pub struct ActionLog {
 #[derive(Debug, Clone)]
 pub enum ActionType {
     Movement {
-        position: EntityPosition,
+        position: Position,
     },
     MonsterAttack {
         attacker_name: String,

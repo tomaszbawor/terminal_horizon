@@ -3,7 +3,7 @@ use super::sidebar;
 use bevy_ecs::world::World;
 use ratatui::prelude::*;
 
-pub fn render(f: &mut Frame, world: &World) {
+pub fn render(f: &mut Frame, world: &mut World) {
     let size = f.area();
 
     // Split screen into sidebar and map areas

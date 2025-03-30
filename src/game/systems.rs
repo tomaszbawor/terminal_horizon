@@ -1,10 +1,10 @@
-use crate::app::{App, GameSystemSet}; // Need App temporarily for input action
+use crate::app::App; // Need App temporarily for input action
 use crate::game::components::*;
 use crate::game::map::GameMap;
 use crate::input::handlers::{Direction, GameAction};
 use bevy_ecs::prelude::*;
 
-use super::state::{ActionJournal, GameTurn};
+use super::state::GameTurn;
 
 // System to process player input and add intent components
 pub fn player_input_system(
@@ -74,9 +74,8 @@ pub fn ai_system(
     mut ai_query: Query<(Entity, &mut BasicAi, &Position), With<Enemy>>,
     player_query: Query<&Position, With<Player>>,
     // Optional: query for other entities if AI needs awareness
-    map: Res<GameMap>, // Needed for pathfinding checks potentially
-    mut log: ResMut<ActionJournal>,
-    turn: Res<GameTurn>,
+    // map: Res<GameMap>, // Needed for pathfinding checks potentially
+    // mut log: ResMut<ActionJournal>,
 ) {
     let player_pos = match player_query.get_single() {
         Ok(p) => p,

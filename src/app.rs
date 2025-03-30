@@ -1,4 +1,3 @@
-use std::vec;
 
 use crate::errors::AppError;
 use crate::game::components::{
@@ -35,7 +34,7 @@ const ENEMIES_COUNT: usize = 10;
 const MAP_WIDTH: usize = 150;
 const MAP_HEIGHT: usize = 120;
 
-static MENU_ITEMS: [&str; 4] = ["New Game", "Continue", "Options", "Quit"];
+pub static MENU_ITEMS: [&str; 4] = ["New Game", "Continue", "Options", "Quit"];
 
 impl App {
     pub fn new() -> Self {
@@ -123,6 +122,7 @@ impl App {
             game_input_action: None,
         }
     }
+
     pub fn handle_events(&mut self) -> Result<bool, AppError> {
         // Using hypothetical AppError
         if let Event::Key(key) = event::read().map_err(AppError::Io)? {

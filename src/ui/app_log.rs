@@ -1,5 +1,5 @@
 use crate::game::action_log::ActionLog;
-use crate::game::entities::EntityPosition;
+use crate::game::components::Position;
 use crate::game::state::ActionJournal;
 use bevy_ecs::world::World;
 use ratatui::Frame;
@@ -35,7 +35,7 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
 fn create_log_entry(action_log: &ActionLog) -> String {
     let log_message = match &action_log.action_type {
         crate::game::action_log::ActionType::Movement {
-            position: EntityPosition { x, y },
+            position: Position { x, y },
         } => {
             format!("Player moved into: ({}, {})", x, y)
         }
