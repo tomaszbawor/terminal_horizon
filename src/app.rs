@@ -1,4 +1,3 @@
-use std::ops::Range;
 
 use crate::errors::AppError;
 use crate::game::action_log::ActionType;
@@ -7,7 +6,6 @@ use crate::game::player::Player;
 use crate::game::state::GameState;
 use crate::game::{action_log::ActionLog, map::GameMap};
 use crossterm::event::{self, Event};
-use rand::{Rng, random_range, rng};
 
 pub enum AppScreen {
     MainMenu,
