@@ -160,12 +160,11 @@ impl App {
             // Decide Actions
             for i in 0..self.game_state.enemies.len() {
                 let enemy_pos = self.game_state.enemies[i].position.clone(); // Clone position for decision
-                //
-                let gs = self.game_state.clone();
+                let game_state = self.game_state.clone();
 
                 let ai_decision = self.game_state.enemies[i]
                     .ai_behavior
-                    .decide_next_action(&enemy_pos, &gs); // Pass immutable game_state
+                    .decide_next_action(&enemy_pos, &game_state);
 
                 enemy_actions.push((i, ai_decision)); // Store decision
             }
@@ -199,13 +198,10 @@ impl App {
                             }
                         }
                     }
-                    AiAction::Attack(target_id) => {
+                    AiAction::Attack(_target_id) => {
                         // Implement combat logic here
                         // For now, just log (placeholder)
-                        println!(
-                            "Enemy {} attacks target {}!",
-                            self.game_state.enemies[enemy_index].name, target_id
-                        );
+
                         self.game_state.journal.push(ActionLog::new(
                             self.game_state.turn,
                             ActionType::MonsterAttack {

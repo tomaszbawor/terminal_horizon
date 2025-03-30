@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Handle potential errors
     if let Err(err) = res {
-        println!("{err:?}");
+        eprintln!("{err:?}");
     }
 
     Ok(())
