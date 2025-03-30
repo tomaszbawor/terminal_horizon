@@ -1,3 +1,5 @@
+use super::entities::EntityPosition;
+
 #[derive(Debug, Clone)]
 pub struct ActionLog {
     pub turn: u32,
@@ -7,8 +9,7 @@ pub struct ActionLog {
 #[derive(Debug, Clone)]
 pub enum ActionType {
     Movement {
-        x: usize,
-        y: usize,
+        position: EntityPosition,
     },
     MonsterAttack {
         attacker_name: String,

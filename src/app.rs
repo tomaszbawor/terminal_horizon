@@ -143,8 +143,7 @@ impl App {
                     self.game_state.journal.push(ActionLog::new(
                         self.game_state.turn,
                         ActionType::Movement {
-                            x: new_pos.0,
-                            y: new_pos.1,
+                            position: EntityPosition::new(new_pos.0, new_pos.1),
                         },
                     ));
                 }
