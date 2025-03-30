@@ -1,4 +1,3 @@
-
 use crate::errors::AppError;
 use crate::game::action_log::ActionType;
 use crate::game::entities::Enemy;

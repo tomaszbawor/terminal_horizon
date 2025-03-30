@@ -1,9 +1,7 @@
 # Terminal Horizon
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Rust Build](https://github.com/<YOUR_GITHUB_USERNAME>/terminal_horizon/actions/workflows/rust.yml/badge.svg)](https://github.com/tomaszbawor/terminal_horizon/actions/workflows/rust.yml)
-[![Crates.io](https://img.shields.io/crates/v/terminal_horizon.svg)](https://crates.io/crates/terminal_horizon)
+[![Rust Build](https://github.com/tomaszbawor/terminal_horizon/actions/workflows/pipeline.yml/badge.svg)](https://github.com/tomaszbawor/terminal_horizon/actions/workflows/pipeline.yml)
+
 A terminal-based roguelike game written in Rust, using the `ratatui` library for its user interface. Explore procedurally generated maps, manage your character, and (eventually) interact with entities within the world.
 
 ## ✨ Features
@@ -31,7 +29,7 @@ A terminal-based roguelike game written in Rust, using the `ratatui` library for
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/](https://github.com/)<YOUR_GITHUB_USERNAME>/terminal_horizon.git
+    git clone https://github.com/tomaszbawor/terminal_horizon.git
     cd terminal_horizon
     ```
 2.  Build the project:
@@ -50,4 +48,9 @@ Execute the compiled binary:
 ```bash
 cargo run
 ```
+
+Or, if you build a release version 
+
+```bash
+./target/release/terminal_horizon
 ```
