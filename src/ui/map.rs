@@ -23,8 +23,8 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
     let viewport_width = inner_area.width as usize;
     let viewport_height = inner_area.height as usize;
 
-    let start_x = player.x.saturating_sub(viewport_width / 2);
-    let start_y = player.y.saturating_sub(viewport_height / 2);
+    let start_x = player.position.x.saturating_sub(viewport_width / 2);
+    let start_y = player.position.y.saturating_sub(viewport_height / 2);
 
     let end_x = std::cmp::min(start_x + viewport_width, map.width);
     let end_y = std::cmp::min(start_y + viewport_height, map.height);
@@ -53,13 +53,16 @@ pub fn render(f: &mut Frame, app: &App, area: Rect) {
             };
 
             // Override if player
-            if x == player.x && y == player.y {
+            if x == player.position.x && y == player.position.y {
                 symbol = "󰋦";
                 style = Style::default().fg(Color::Yellow)
             }
 
             // Override if enemy
-            if let Some(enemy) = enemies.iter().find(|&e| e.x == x && e.y == y) {
+            if let Some(enemy) = enemies
+                .iter()
+                .find(|&e| e.position.x == x && e.position.y == y)
+            {
                 symbol = &enemy.symbol;
                 style = Style::default().fg(Color::LightRed); // enemy color
             }
