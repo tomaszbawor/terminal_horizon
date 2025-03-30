@@ -5,6 +5,7 @@ use crate::game::player::Player;
 use crate::game::state::GameState;
 use crate::game::{action_log::ActionLog, map::GameMap};
 use crossterm::event::{self, Event};
+use rand::{Rng, rng};
 
 pub enum AppScreen {
     MainMenu,
@@ -20,26 +21,33 @@ pub struct App {
     pub game_state: GameState,
 }
 
+const ENEMIES_COUNT: usize = 10;
+const MAP_WIDTH: usize = 150;
+const MAP_HEIGHT: usize = 120;
+
 impl App {
     pub fn new() -> Self {
-        let map = GameMap::new(150, 130);
-        let enemies = vec![Enemy::new(
-            EntityPosition::new(20, 20),
-            "Goblin",
-            "g",
-            20,
-            5,
-            2,
-            8,
-        )];
+        let map = GameMap::new(MAP_WIDTH, MAP_HEIGHT);
+        let mut enemies = vec![];
 
-        //let rand = rng();
+        let mut rand = rng();
 
-        //while enemies.len() < 4 {
-        // generate random cooridinates for enemies
-        //enemies.push(Enemy::new(20, 20, "Goblin", "g", 20, 5, 2, 8));
-        //   break;
-        //}
+        while enemies.len() < ENEMIES_COUNT {
+            let x_pos = rand.random_range(1..MAP_WIDTH);
+            let y_pos = rand.random_range(1..MAP_HEIGHT);
+
+            if !map.is_wall(x_pos, y_pos) {
+                enemies.push(Enemy::new(
+                    EntityPosition::new(x_pos, y_pos),
+                    "Goblin",
+                    "g",
+                    20,
+                    5,
+                    2,
+                    8,
+                ));
+            }
+        }
 
         Self {
             screen: AppScreen::MainMenu,
