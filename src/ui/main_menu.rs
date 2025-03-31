@@ -3,7 +3,7 @@ use ratatui::{prelude::*, widgets::*};
 
 use crate::app::MENU_ITEMS;
 
-pub fn render(f: &mut Frame, app: &World) {
+pub fn render(f: &mut Frame, world: &mut World) {
     let size = f.area();
 
     // Create a centered block for the menu

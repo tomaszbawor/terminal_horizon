@@ -157,14 +157,14 @@ impl App {
 
     // Run schedules only when player did action
     pub fn run_schedule(&mut self) {
-        let gia = self.world.resource_mut::<GameInputAction>();
+        let game_input_action = self.world.resource_mut::<GameInputAction>();
         // Only run the schedule if there was a player action waiting
-        if gia.0.is_some() {
+        if game_input_action.0.is_some() {
             self.schedule.run(&mut self.world);
 
             // Clear the action after the schedule runs
-            let mut g = self.world.resource_mut::<GameInputAction>();
-            g.set_if_neq(GameInputAction(None));
+            let mut game_input_action = self.world.resource_mut::<GameInputAction>();
+            game_input_action.set_if_neq(GameInputAction(None));
         }
     }
 

@@ -10,7 +10,7 @@ use ratatui::prelude::*;
 
 pub fn ui(f: &mut Frame, app: &mut App) {
     match app.screen {
-        AppScreen::MainMenu => main_menu::render(f, &app.world),
+        AppScreen::MainMenu => main_menu::render(f, &mut app.world),
         AppScreen::Game => game_ui::render(f, &mut app.world),
         AppScreen::Options => todo!(),
     }
