@@ -24,9 +24,8 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
 
-    let mut player_props_query =
-        world.query_filtered::<(&Name, &Health, &Stats, &Position), With<Player>>();
-    let (player_name, health, stats, ppos) = player_props_query.single(world);
+    let mut player_props_query = world.query_filtered::<(&Name, &Stats, &Position), With<Player>>();
+    let (player_name, stats, ppos) = player_props_query.single(world);
 
     let player_info = Paragraph::new(vec![
         Line::from(vec![
@@ -42,14 +41,9 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         Line::from(vec![
             Span::styled("HP: ", Style::default().fg(Color::Gray)),
             Span::styled(
-                format!("{}/{}", health.hp, health.max_hp),
+                format!("{}/{}", stats.health.hp, stats.health.max_hp),
                 Style::default().fg(Color::Red),
             ),
-        ]),
-        Line::from(vec![
-            Span::styled("EXP: ", Style::default().fg(Color::Gray)),
-            //TODO: Implement
-            // Span::styled(player.exp.to_string(), Style::default().fg(Color::Blue)),
         ]),
     ])
     .block(player_block);
