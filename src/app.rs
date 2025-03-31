@@ -26,7 +26,6 @@ pub struct GameInputAction(pub Option<GameAction>);
 pub struct App {
     pub screen: AppScreen,
     pub should_quit: bool,
-    pub menu_index: usize,
     pub world: World,
     pub schedule: Schedule,
 }
@@ -63,6 +62,7 @@ impl App {
                 attack: 10,
                 defense: 5,
             },
+            BlocksTile,
             // Add the new player parameter here
         ));
 
@@ -106,8 +106,8 @@ impl App {
 
         schedule.add_systems(
             (
-                crate::game::systems::player_input_system.in_set(GameSystemSet::Input),
-                crate::game::systems::ai_system.in_set(GameSystemSet::AI),
+                systems::player_input_system.in_set(GameSystemSet::Input),
+                systems::ai_system.in_set(GameSystemSet::AI),
                 // Apply deferred buffer allows systems to safely add/remove components/entities
                 apply_deferred.in_set(GameSystemSet::ApplyCommands),
                 systems::movement_system.in_set(GameSystemSet::Movement),
@@ -119,14 +119,13 @@ impl App {
         Self {
             screen: AppScreen::MainMenu,
             should_quit: false,
-            menu_index: 0,
             schedule,
             world,
         }
     }
 
     pub fn handle_events(&mut self) -> Result<bool, AppError> {
-        let mut gia = self.world.resource_mut::<GameInputAction>();
+        let mut game_input_action = self.world.resource_mut::<GameInputAction>();
 
         // Using hypothetical AppError
         if let Event::Key(key) = event::read().map_err(AppError::Io)? {
@@ -138,15 +137,15 @@ impl App {
                 }
 
                 AppScreen::Game => {
-                    gia.set_if_neq(GameInputAction(crate::input::handlers::handle_game_input(
-                        key,
-                    )));
-                    if matches!(gia.0, Some(GameAction::OpenMenu)) {
+                    game_input_action.set_if_neq(GameInputAction(
+                        crate::input::handlers::handle_game_input(key),
+                    ));
+                    if matches!(game_input_action.0, Some(GameAction::OpenMenu)) {
                         self.screen = AppScreen::MainMenu;
-                        gia.set_if_neq(GameInputAction(None)); // Consume Acton
-                    } else if matches!(gia.0, Some(GameAction::Quit)) {
+                        game_input_action.set_if_neq(GameInputAction(None)); // Consume Acton
+                    } else if matches!(game_input_action.0, Some(GameAction::Quit)) {
                         self.should_quit = true;
-                        gia.set_if_neq(GameInputAction(None)); // Consume Acton
+                        game_input_action.set_if_neq(GameInputAction(None)); // Consume Acton
                     }
                     // Player input action now handled by the system
                 }
@@ -158,9 +157,12 @@ impl App {
 
     // Run schedules only when player did action
     pub fn run_schedule(&mut self) {
+        // Game Systems will be run only when some action done, this may become problem when we use
+        // systems to handle input on other screens.
         let game_input_action = self.world.resource_mut::<GameInputAction>();
         // Only run the schedule if there was a player action waiting
         if game_input_action.0.is_some() {
+            // Runs ecs systems
             self.schedule.run(&mut self.world);
 
             // Clear the action after the schedule runs
@@ -185,7 +187,8 @@ impl App {
                     menu_index.0 += 1;
                 }
             }
-            MenuAction::Select => match self.menu_index {
+            //TODO: We should not care about menu index
+            MenuAction::Select => match menu_index.0 {
                 0 | 1 => self.screen = AppScreen::Game, // New Game or Continue
                 2 => {}                                 // Options
                 3 => self.should_quit = true,           // Quit
