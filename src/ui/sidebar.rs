@@ -1,7 +1,10 @@
 use bevy_ecs::{query::With, world::World};
 use ratatui::{prelude::*, widgets::*};
 
-use crate::game::{components::Player, components::Position, state::GameTurn};
+use crate::game::{
+    components::{Health, Name, Player, Position, Stats},
+    state::GameTurn,
+};
 
 pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
     // Create blocks for different sections
@@ -21,27 +24,31 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
 
+    let mut player_props_query =
+        world.query_filtered::<(&Name, &Health, &Stats, &Position), With<Player>>();
+    let (player_name, health, stats, ppos) = player_props_query.single(world);
+
     let player_info = Paragraph::new(vec![
         Line::from(vec![
             Span::styled("Name: ", Style::default().fg(Color::Gray)),
-            // Span::styled(&player.name, Style::default().fg(Color::Yellow)),
-            Span::styled("DUPA", Style::default().fg(Color::Yellow)),
+            Span::styled(&player_name.0, Style::default().fg(Color::Yellow)),
         ]),
         Line::from(vec![
             Span::styled("Level: ", Style::default().fg(Color::Gray)),
+            //TODO: Implement
             // Span::styled(player.level.to_string(), Style::default().fg(Color::Green)),
             Span::styled("12", Style::default().fg(Color::Green)),
         ]),
         Line::from(vec![
             Span::styled("HP: ", Style::default().fg(Color::Gray)),
             Span::styled(
-                // format!("{}/{}", player.hp, player.max_hp),
-                "EEE",
+                format!("{}/{}", health.hp, health.max_hp),
                 Style::default().fg(Color::Red),
             ),
         ]),
         Line::from(vec![
             Span::styled("EXP: ", Style::default().fg(Color::Gray)),
+            //TODO: Implement
             // Span::styled(player.exp.to_string(), Style::default().fg(Color::Blue)),
         ]),
     ])
@@ -55,23 +62,18 @@ pub fn render(f: &mut Frame, world: &mut World, area: Rect) {
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded);
 
-    let mut ddf = world.query_filtered::<&Position, With<Player>>();
-    let ppos = ddf.single(world);
-
     let stats_info = Paragraph::new(vec![
         Line::from(vec![
             Span::styled("Attack: ", Style::default().fg(Color::Gray)),
             Span::styled(
-                // player.attack.to_string(),
-                "TOMEK",
+                stats.attack.to_string(),
                 Style::default().fg(Color::LightRed),
             ),
         ]),
         Line::from(vec![
             Span::styled("Defense: ", Style::default().fg(Color::Gray)),
             Span::styled(
-                "E",
-                // player.defense.to_string(),
+                stats.defense.to_string(),
                 Style::default().fg(Color::LightBlue),
             ),
         ]),

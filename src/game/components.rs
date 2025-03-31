@@ -18,7 +18,7 @@ pub struct Renderable {
 #[derive(Component)]
 pub struct Name(pub String);
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Component, Clone)]
 pub struct Health {
     pub hp: usize,
     pub max_hp: usize,
