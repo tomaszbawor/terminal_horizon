@@ -20,7 +20,7 @@ pub enum AppScreen {
     Game,
 }
 
-#[derive(Resource, PartialEq)]
+#[derive(Resource, PartialEq, Debug)]
 pub struct GameInputAction(pub Option<GameAction>);
 
 pub struct App {
@@ -135,6 +135,7 @@ impl App {
                         self.apply_menu_action(action); // New method needed
                     }
                 }
+
                 AppScreen::Game => {
                     gia.set_if_neq(GameInputAction(crate::input::handlers::handle_game_input(
                         key,
@@ -156,13 +157,14 @@ impl App {
 
     // Run schedules only when player did action
     pub fn run_schedule(&mut self) {
-        let mut gia = self.world.resource_mut::<GameInputAction>();
+        let gia = self.world.resource_mut::<GameInputAction>();
         // Only run the schedule if there was a player action waiting
-        // or potentially on a timer later for real-time elements.
         if gia.0.is_some() {
-            gia.set_if_neq(GameInputAction(None)); // Consume Acton
             self.schedule.run(&mut self.world);
+
             // Clear the action after the schedule runs
+            let mut g = self.world.resource_mut::<GameInputAction>();
+            g.set_if_neq(GameInputAction(None));
         }
     }
 

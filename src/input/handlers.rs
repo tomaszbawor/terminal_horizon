@@ -9,7 +9,7 @@ pub enum MenuAction {
 }
 
 // Represents actions possible in the game
-#[derive(Clone, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, PartialEq, PartialOrd)]
 pub enum GameAction {
     MovePlayer(Direction), // Define Direction enum (Up, Down, Left, Right)
     OpenInventory,
@@ -17,7 +17,7 @@ pub enum GameAction {
     Quit,
 }
 
-#[derive(Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Direction {
     Up,
     Down,
