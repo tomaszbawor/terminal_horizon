@@ -3,7 +3,7 @@ use crate::game::components::{
     AiState, BasicAi, BlocksTile, Enemy, Health, Name, Player, Position, Renderable, Stats,
 };
 use crate::game::map::GameMap;
-use crate::game::state::{ActionJournal, GameTurn};
+use crate::game::state::{ActionJournal, ActiveMenuIndex, GameTurn};
 use crate::game::systems;
 use crate::input::handlers::GameAction;
 use bevy_ecs::change_detection::DetectChangesMut;
@@ -46,6 +46,7 @@ impl App {
         world.insert_resource(ActionJournal::default());
         world.insert_resource(GameTurn::default());
         world.insert_resource(GameInputAction(None));
+        world.insert_resource(ActiveMenuIndex::default());
 
         // Spawn entities
         world.spawn((
@@ -170,15 +171,18 @@ impl App {
 
     fn apply_menu_action(&mut self, action: crate::input::handlers::MenuAction) {
         use crate::input::handlers::MenuAction;
+
+        let mut menu_index = self.world.resource_mut::<ActiveMenuIndex>();
+
         match action {
             MenuAction::NavigateUp => {
-                if self.menu_index > 0 {
-                    self.menu_index -= 1;
+                if menu_index.0 > 0 {
+                    menu_index.0 -= 1;
                 }
             }
             MenuAction::NavigateDown => {
-                if self.menu_index < Vec::from(MENU_ITEMS).len() - 1 {
-                    self.menu_index += 1;
+                if menu_index.0 < Vec::from(MENU_ITEMS).len() - 1 {
+                    menu_index.0 += 1;
                 }
             }
             MenuAction::Select => match self.menu_index {

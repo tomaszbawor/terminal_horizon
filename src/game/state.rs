@@ -9,3 +9,6 @@ pub struct ActionJournal {
 
 #[derive(Resource, Default)]
 pub struct GameTurn(pub u32);
+
+#[derive(Resource, Default)]
+pub struct ActiveMenuIndex(pub usize);

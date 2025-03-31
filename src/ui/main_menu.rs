@@ -1,7 +1,7 @@
 use bevy_ecs::world::World;
 use ratatui::{prelude::*, widgets::*};
 
-use crate::app::MENU_ITEMS;
+use crate::{app::MENU_ITEMS, game::state::ActiveMenuIndex};
 
 pub fn render(f: &mut Frame, world: &mut World) {
     let size = f.area();
@@ -24,14 +24,14 @@ pub fn render(f: &mut Frame, world: &mut World) {
             Constraint::Percentage(30),
         ])
         .split(size)[1];
-
+    let menu_index = world.resource_mut::<ActiveMenuIndex>();
     // Create menu items
     let menu_items: Vec<ListItem> = Vec::from(MENU_ITEMS)
         .iter()
         .enumerate()
         .map(|(i, item)| {
             // let style = if i == app.menu_index {
-            let style = if i == 1 {
+            let style = if i == menu_index.0 {
                 Style::default()
                     .fg(Color::Yellow)
                     .add_modifier(Modifier::BOLD)
